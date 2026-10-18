@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: smartcare-backend-api
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: pnpm install && pnpm run generate && pnpm run build
+    startCommand: pnpm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: BETTER_AUTH_SECRET
+        sync: false
+      - key: ACCESS_TOKEN_SECRET
+        sync: false
+      - key: REFRESH_TOKEN_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: EMAIL_SENDER_SMTP_USER
+        sync: false
+      - key: EMAIL_SENDER_SMTP_PASS
+        sync: false
+      - key: EMAIL_SENDER_SMTP_HOST
+        sync: false
+      - key: EMAIL_SENDER_SMTP_PORT
+        sync: false
+      - key: EMAIL_SENDER_SMTP_FROM
+        sync: false
+      - key: FRONTEND_URL
+        value: https://frontend-eight-delta-16.vercel.app
