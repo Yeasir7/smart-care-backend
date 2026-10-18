@@ -99,12 +99,19 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
 const loginUser = async (payload: ILoginUserPayload) => {
     const { email, password } = payload;
 
-    const data = await auth.api.signInEmail({
-        body: {
-            email,
-            password,
-        }
-    })
+    let data;
+    try {
+        data = await auth.api.signInEmail({
+            body: {
+                email,
+                password,
+            }
+        });
+    } catch (error: any) {
+        const errorMsg = error?.message || "Invalid email or password";
+        const statusCode = error?.statusCode || error?.status || status.UNAUTHORIZED;
+        throw new AppError(statusCode, errorMsg);
+    }
 
     if (data.user.status === UserStatus.BLOCKED) {
         throw new AppError(status.FORBIDDEN, "User is blocked");

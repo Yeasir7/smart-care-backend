@@ -68,7 +68,7 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
         ]
     }
     else if (err instanceof Error) {
-        statusCode = status.INTERNAL_SERVER_ERROR;
+        statusCode = (err as any).statusCode || (err as any).status || status.INTERNAL_SERVER_ERROR;
         message = err.message
         stack = err.stack;
         errorSources = [
