@@ -28,22 +28,20 @@
 
                 const data = await response.json();
 
-                if(data.url){
-                    window.location.href = data.url
+                if(data && data.url){
+                    window.location.href = data.url;
                 }else{
+                    const errMsg = (data && (data.message || data.error)) || "Unable to initialize Google Sign-in. Please try again.";
                     document.body.innerHTML = `<div>
-                    <p>
-                        Error Occurred While Redirecting To Google. Please Try Again Later.
-                    </p>
-                    </div>`
+                    <p style="color: red; font-family: sans-serif;">${errMsg}</p>
+                    <p><a href="<%= betterAuthUrl %>/api/v1/auth/login/google" style="font-family: sans-serif;">Try Again</a></p>
+                    </div>`;
                 }
             } catch (error) {
                 document.body.innerHTML = `<div>
-                    <p>
-                        Error Occurred While Redirecting To Google. Please Try Again Later.
-                        ${error.message}
-                    </p>
-                    </div>`
+                    <p style="color: red; font-family: sans-serif;">${error.message}</p>
+                    <p><a href="<%= betterAuthUrl %>/api/v1/auth/login/google" style="font-family: sans-serif;">Try Again</a></p>
+                    </div>`;
             }
         }
     )()

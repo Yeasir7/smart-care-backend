@@ -198,17 +198,42 @@ const resetPassword = catchAsync(
 )
 
 // /api/v1/auth/login/google?redirect=/profile
-const googleLogin = catchAsync((req: Request, res: Response) => {
-    const redirectPath = req.query.redirect || "/dashboard";
-
-    const encodedRedirectPath = encodeURIComponent(redirectPath as string);
-
+const googleLogin = catchAsync(async (req: Request, res: Response) => {
+    const redirectPath = (req.query.redirect as string) || "/dashboard";
+    const encodedRedirectPath = encodeURIComponent(redirectPath);
     const callbackURL = `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success?redirect=${encodedRedirectPath}`;
+
+    try {
+        const authResponse = await auth.api.signInSocial({
+            body: {
+                provider: "google",
+                callbackURL,
+            },
+            asResponse: true,
+        });
+
+        const setCookie = authResponse.headers.get("set-cookie");
+        if (setCookie) {
+            res.setHeader("Set-Cookie", setCookie);
+        }
+
+        const data = (await authResponse.json()) as any;
+        if (data?.url) {
+            return res.redirect(data.url);
+        }
+
+        const location = authResponse.headers.get("location");
+        if (location) {
+            return res.redirect(location);
+        }
+    } catch (error) {
+        console.error("Error initiating Google OAuth server-side:", error);
+    }
 
     res.render("googleRedirect", {
         callbackURL : callbackURL,
         betterAuthUrl : envVars.BETTER_AUTH_URL,
-    })
+    });
 })
 
 const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {
